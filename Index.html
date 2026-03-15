@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+
+<html lang="no">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Grok Prompts">
+  <title>Grok Prompt Builder</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --gold: #e2c27d;
+      --gold-dim: #c9a84c;
+      --bg: #0d0d0d;
+      --surface: #111111;
+      --border: #1e1e1e;
+      --border-2: #2a2a2a;
+      --text: #e8e8e8;
+      --muted: #555;
+      --sub: #888;
+    }
+
+```
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+html { height: -webkit-fill-available; }
+
+.header {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(13,13,13,0.95);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 20px;
+  padding-top: calc(16px + env(safe-area-inset-top));
+  display: -webkit-flex;
+  display: flex;
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-justify-content: space-between;
+  justify-content: space-between;
+}
+
+.logo { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; gap: 10px; }
+.logo-icon {
+  width: 32px; height: 32px;
+  background: -webkit-linear-gradient(315deg, var(--gold), var(--gold-dim));
+  background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+  border-radius: 8px;
+  display: -webkit-flex; display: flex;
+  -webkit-align-items: center; align-items: center;
+  -webkit-justify-content: center; justify-content: center;
+  font-size: 16px; flex-shrink: 0;
+}
+.logo-text { font-size: 16px; font-weight: 700; letter-spacing: -0.02em; }
+.logo-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
+
+.tabs { display: -webkit-flex; display: flex; gap: 4px; }
+.tab {
+  padding: 7px 14px; border-radius: 8px; border: none;
+  background: transparent; color: var(--muted); cursor: pointer;
+  font-size: 13px; font-weight: 500; font-family: inherit;
+  -webkit-transition: all 0.15s; transition: all 0.15s;
+  -webkit-appearance: none;
+}
+.tab.active { background: #1e1e1e; color: var(--gold); }
+
+.content { max-width: 600px; margin: 0 auto; padding: 28px 20px 40px; }
+
+.apikey-box {
+  background: var(--surface);
+  border: 1px solid var(--border-2);
+  border-radius: 14px;
+  padding: 14px 18px;
+  margin-bottom: 28px;
+  display: -webkit-flex; display: flex;
+  -webkit-align-items: center; align-items: center;
+  gap: 12px;
+  -webkit-transition: border-color 0.2s; transition: border-color 0.2s;
+}
+.apikey-box.valid { border-color: rgba(226,194,125,0.35); }
+.apikey-icon { font-size: 17px; flex-shrink: 0; }
+.apikey-input {
+  -webkit-flex: 1; flex: 1; background: transparent; border: none;
+  color: var(--text); font-size: 13px;
+  font-family: monospace; outline: none; min-width: 0;
+  -webkit-appearance: none;
+  border-radius: 0;
+}
+.apikey-input::placeholder { color: var(--muted); font-family: 'DM Sans', sans-serif; }
+.apikey-status {
+  font-size: 11px; font-weight: 600; flex-shrink: 0;
+  padding: 4px 10px; border-radius: 999px;
+}
+.apikey-status.ok { background: rgba(100,200,100,0.1); color: #6ec66e; }
+.apikey-status.empty { background: rgba(255,255,255,0.05); color: var(--muted); }
+
+.section { margin-bottom: 28px; }
+.section-label {
+  font-size: 10px; font-weight: 700; color: var(--muted);
+  letter-spacing: 0.1em; text-transform: uppercase;
+  display: block; margin-bottom: 12px;
+}
+
+.chips { display: -webkit-flex; display: flex; -webkit-flex-wrap: wrap; flex-wrap: wrap; gap: 8px; }
+.chip {
+  padding: 7px 14px; border-radius: 999px;
+  border: 1.5px solid var(--border-2);
+  background: rgba(255,255,255,0.02);
+  color: var(--sub); cursor: pointer;
+  font-size: 13px; font-family: inherit; font-weight: 400;
+  -webkit-transition: all 0.15s; transition: all 0.15s;
+  -webkit-appearance: none;
+}
+.chip.selected {
+  border-color: var(--gold);
+  background: rgba(226,194,125,0.10);
+  color: var(--gold); font-weight: 600;
+}
+
+.text-input {
+  width: 100%; background: var(--surface);
+  border: 1px solid var(--border-2); border-radius: 12px;
+  padding: 13px 16px; color: var(--text);
+  font-size: 14px; font-family: inherit; outline: none;
+  resize: none; margin-top: 12px;
+  -webkit-appearance: none;
+  border-radius: 12px;
+}
+.text-input::placeholder { color: var(--muted); }
+.text-input:focus { border-color: #333; }
+
+.btn-generate {
+  width: 100%; padding: 17px;
+  background: -webkit-linear-gradient(315deg, var(--gold), var(--gold-dim));
+  background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+  color: #0d0d0d; border: none; border-radius: 14px;
+  font-size: 15px; font-weight: 700; cursor: pointer;
+  font-family: inherit; letter-spacing: -0.01em;
+  -webkit-transition: opacity 0.2s, -webkit-transform 0.1s;
+  transition: opacity 0.2s, transform 0.1s;
+  margin-bottom: 20px; -webkit-appearance: none;
+}
+.btn-generate:active { -webkit-transform: scale(0.98); transform: scale(0.98); opacity: 0.9; }
+.btn-generate:disabled { background: #1a1a1a; color: var(--muted); cursor: not-allowed; -webkit-transform: none; transform: none; }
+
+.result-box {
+  background: var(--surface); border: 1px solid var(--border-2);
+  border-radius: 14px; padding: 20px; display: none;
+}
+.result-box.visible { display: block; }
+.result-label {
+  font-size: 10px; font-weight: 700; color: var(--muted);
+  letter-spacing: 0.1em; text-transform: uppercase;
+  margin-bottom: 12px; display: block;
+}
+.result-text {
+  font-size: 14px; line-height: 1.75; color: #d4d4d4;
+  font-style: italic; font-family: 'DM Serif Display', serif;
+}
+.btn-copy {
+  margin-top: 16px; padding: 9px 20px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border-2); border-radius: 8px;
+  color: var(--sub); cursor: pointer; font-size: 13px;
+  font-family: inherit; font-weight: 500;
+  -webkit-transition: all 0.15s; transition: all 0.15s;
+  -webkit-appearance: none;
+}
+.btn-copy.copied {
+  background: rgba(226,194,125,0.12);
+  border-color: var(--gold); color: var(--gold);
+}
+
+.spinner {
+  display: inline-block; width: 14px; height: 14px;
+  border: 2px solid rgba(255,255,255,0.15);
+  border-top-color: var(--muted); border-radius: 50%;
+  -webkit-animation: spin 0.7s linear infinite;
+  animation: spin 0.7s linear infinite;
+  vertical-align: middle; margin-right: 6px;
+}
+@-webkit-keyframes spin { to { -webkit-transform: rotate(360deg); transform: rotate(360deg); } }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.example-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 14px; padding: 18px 20px; margin-bottom: 14px;
+  cursor: pointer; -webkit-transition: border-color 0.15s; transition: border-color 0.15s;
+  -webkit-appearance: none; text-align: left;
+  width: 100%; font-family: inherit;
+}
+.example-card:active { border-color: var(--border-2); }
+.example-card-label {
+  font-size: 10px; color: var(--gold); font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  margin-bottom: 8px; display: block;
+}
+.example-card-text {
+  font-size: 13px; color: #bbb; line-height: 1.7;
+  font-style: italic; font-family: 'DM Serif Display', serif;
+}
+
+.tips-box {
+  background: rgba(226,194,125,0.04);
+  border: 1px solid rgba(226,194,125,0.15);
+  border-radius: 14px; padding: 18px 20px; margin-top: 8px;
+}
+.tips-title { font-size: 13px; font-weight: 600; color: var(--gold); margin-bottom: 10px; }
+.tips-list { list-style: none; padding: 0; }
+.tips-list li {
+  font-size: 13px; color: var(--sub); line-height: 1.8;
+  padding-left: 16px; position: relative;
+}
+.tips-list li::before { content: "→"; position: absolute; left: 0; color: var(--gold); font-size: 11px; }
+.tips-list li strong { color: #bbb; }
+
+.toast {
+  position: fixed;
+  bottom: calc(30px + env(safe-area-inset-bottom));
+  left: 50%; -webkit-transform: translateX(-50%) translateY(80px); transform: translateX(-50%) translateY(80px);
+  background: #1e1e1e; border: 1px solid var(--gold);
+  color: var(--gold); padding: 10px 22px;
+  border-radius: 999px; font-size: 13px; font-weight: 600;
+  -webkit-transition: -webkit-transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  z-index: 999; pointer-events: none;
+}
+.toast.show { -webkit-transform: translateX(-50%) translateY(0); transform: translateX(-50%) translateY(0); }
+
+/* Hidden textarea for Safari clipboard fallback */
+#clipboard-helper {
+  position: fixed; top: -9999px; left: -9999px;
+  width: 1px; height: 1px; opacity: 0;
+  font-size: 16px; /* Prevents Safari zoom on focus */
+}
+```
+
+  </style>
+</head>
+<body>
+
+<textarea id="clipboard-helper" readonly aria-hidden="true"></textarea>
+
+<div class="header">
+  <div class="logo">
+    <div class="logo-icon">✦</div>
+    <div>
+      <div class="logo-text">Grok Prompt Builder</div>
+      <div class="logo-sub">Powered by Grok AI</div>
+    </div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('builder')">Bygg</button>
+    <button class="tab" onclick="showTab('examples')">Tips</button>
+  </div>
+</div>
+
+<div class="content">
+
+  <div id="tab-builder">
+
+```
+<div class="apikey-box" id="apikey-box">
+  <span class="apikey-icon">🔑</span>
+  <input
+    class="apikey-input"
+    id="apikey-input"
+    type="password"
+    placeholder="Lim inn xAI API-nøkkel (xai-...)"
+    oninput="updateKeyStatus()"
+    autocomplete="off" autocorrect="off"
+    autocapitalize="off" spellcheck="false"
+  >
+  <span class="apikey-status empty" id="apikey-status">Mangler</span>
+</div>
+
+<div class="section">
+  <span class="section-label">01 — Emne / Motiv</span>
+  <div class="chips" id="chips-subject"></div>
+  <textarea class="text-input" id="details" rows="2" placeholder="Beskriv motivet ditt... f.eks. 'a Norwegian fisherman in his 60s'"></textarea>
+</div>
+
+<div class="section">
+  <span class="section-label">02 — Stil</span>
+  <div class="chips" id="chips-style"></div>
+</div>
+
+<div class="section">
+  <span class="section-label">03 — Lys</span>
+  <div class="chips" id="chips-lighting"></div>
+</div>
+
+<div class="section">
+  <span class="section-label">04 — Stemning</span>
+  <div class="chips" id="chips-mood"></div>
+</div>
+
+<div class="section">
+  <span class="section-label">05 — Kamera</span>
+  <div class="chips" id="chips-camera"></div>
+</div>
+
+<button class="btn-generate" id="btn-generate" onclick="generate()">✦ Lag perfekt prompt</button>
+
+<div class="result-box" id="result-box">
+  <span class="result-label">Din Grok Imagine Prompt</span>
+  <p class="result-text" id="result-text"></p>
+  <button class="btn-copy" id="btn-copy" onclick="copyPrompt()">Kopier prompt</button>
+</div>
+```
+
+  </div>
+
+  <div id="tab-examples" style="display:none">
+    <p style="color: var(--muted); font-size: 14px; margin-bottom: 24px;">Trykk for å kopiere – lim rett inn i Grok Imagine.</p>
+
+```
+<button class="example-card" onclick="copyExample(this, 0)">
+  <span class="example-card-label">Eksempel 1 — Natur</span>
+  <span class="example-card-text">A lone lighthouse on a rocky Norwegian coast at blue hour, mist rolling in from the sea, cinematic 4K photography, Canon EOS R5, dramatic clouds, photorealistic</span>
+</button>
+<button class="example-card" onclick="copyExample(this, 1)">
+  <span class="example-card-label">Eksempel 2 — Portrett</span>
+  <span class="example-card-text">Portrait of an elderly craftsman in his workshop, golden hour light through dusty windows, shallow depth of field, authentic documentary style, Leica M11, highly detailed, 8K</span>
+</button>
+<button class="example-card" onclick="copyExample(this, 2)">
+  <span class="example-card-label">Eksempel 3 — By</span>
+  <span class="example-card-text">Modern Oslo city street at night, reflections on wet cobblestones, neon signs, long exposure photography, cinematic atmosphere, Sony A7R IV, ultra realistic, 8K resolution</span>
+</button>
+<button class="example-card" onclick="copyExample(this, 3)">
+  <span class="example-card-label">Eksempel 4 — Arkitektur</span>
+  <span class="example-card-text">Scandinavian cabin surrounded by snow-covered pine trees at dawn, warm amber light glowing from windows, aerial drone shot, overcast sky, cinematic, Hasselblad, photorealistic</span>
+</button>
+
+<div class="tips-box">
+  <div class="tips-title">💡 Tips for beste resultat</div>
+  <ul class="tips-list">
+    <li>Skriv alltid på <strong>engelsk</strong></li>
+    <li>Spesifiser kameramodell og linse</li>
+    <li>Beskriv lyset så nøyaktig som mulig</li>
+    <li>Legg til <strong>"photorealistic, 8K"</strong> på slutten</li>
+    <li>Bruk filmreferanser som <strong>"shot like a Nolan film"</strong></li>
+    <li>Gi referanse til årstid, vær og tidspunkt</li>
+  </ul>
+</div>
+```
+
+  </div>
+</div>
+
+<div class="toast" id="toast">✓ Kopiert!</div>
+
+<script>
+  const CHIPS = {
+    subject:  ["Person","Landskap","Arkitektur","Dyr","Abstrakt","Produkt","Mat","By/Gate"],
+    style:    ["Fotorealistisk","Kinematisk","Studio-foto","Dokumentar","Naturlig lys","High-fashion","Editorial","Gyllen time"],
+    lighting: ["Naturlig dagslys","Gyllen time","Blå time","Studio-lys","Neonlys","Stearinlys","Overskyet","Dramatisk skygge"],
+    mood:     ["Dramatisk","Rolig","Mystisk","Energisk","Melankolsk","Episk","Intim","Futuristisk"],
+    camera:   ["Canon EOS R5","Sony A7R IV","Nikon Z9","Hasselblad","Leica M11","Drone","Vidvinkel","85mm portrett"],
+  };
+
+  const selected = { subject:"", style:"", lighting:"", mood:"", camera:"" };
+
+  const EXAMPLES = [
+    "A lone lighthouse on a rocky Norwegian coast at blue hour, mist rolling in from the sea, cinematic 4K photography, Canon EOS R5, dramatic clouds, photorealistic",
+    "Portrait of an elderly craftsman in his workshop, golden hour light through dusty windows, shallow depth of field, authentic documentary style, Leica M11, highly detailed, 8K",
+    "Modern Oslo city street at night, reflections on wet cobblestones, neon signs, long exposure photography, cinematic atmosphere, Sony A7R IV, ultra realistic, 8K resolution",
+    "Scandinavian cabin surrounded by snow-covered pine trees at dawn, warm amber light glowing from windows, aerial drone shot, overcast sky, cinematic, Hasselblad, photorealistic",
+  ];
+
+  Object.keys(CHIPS).forEach(function(group) {
+    var container = document.getElementById('chips-' + group);
+    CHIPS[group].forEach(function(label) {
+      var btn = document.createElement('button');
+      btn.className = 'chip';
+      btn.textContent = label;
+      btn.addEventListener('click', function() {
+        selected[group] = selected[group] === label ? "" : label;
+        container.querySelectorAll('.chip').forEach(function(b) { b.classList.remove('selected'); });
+        if (selected[group]) btn.classList.add('selected');
+      });
+      container.appendChild(btn);
+    });
+  });
+
+  function updateKeyStatus() {
+    var val = document.getElementById('apikey-input').value.trim();
+    var status = document.getElementById('apikey-status');
+    var box = document.getElementById('apikey-box');
+    if (val.indexOf('xai-') === 0 && val.length > 20) {
+      status.textContent = '✓ Klar';
+      status.className = 'apikey-status ok';
+      box.classList.add('valid');
+    } else {
+      status.textContent = 'Mangler';
+      status.className = 'apikey-status empty';
+      box.classList.remove('valid');
+    }
+  }
+
+  function showTab(tab) {
+    document.getElementById('tab-builder').style.display = tab === 'builder' ? 'block' : 'none';
+    document.getElementById('tab-examples').style.display = tab === 'examples' ? 'block' : 'none';
+    document.querySelectorAll('.tab').forEach(function(t, i) {
+      t.classList.toggle('active', (i === 0 && tab === 'builder') || (i === 1 && tab === 'examples'));
+    });
+  }
+
+  async function generate() {
+    var apiKey = document.getElementById('apikey-input').value.trim();
+    if (apiKey.indexOf('xai-') !== 0) {
+      showResult("⚠️ Lim inn xAI API-nøkkelen din øverst først!");
+      return;
+    }
+
+    var details = document.getElementById('details').value.trim();
+    var parts = [
+      selected.subject, details,
+      selected.style    ? selected.style + " style" : "",
+      selected.lighting ? selected.lighting + " lighting" : "",
+      selected.mood     ? selected.mood + " mood" : "",
+      selected.camera   ? "shot on " + selected.camera : "",
+      "highly detailed, photorealistic, 8K resolution"
+    ].filter(Boolean);
+
+    if (!selected.subject && !details) {
+      showResult("⚠️ Velg et emne eller skriv en beskrivelse først!");
+      return;
+    }
+
+    var base = parts.join(", ");
+    var btn = document.getElementById('btn-generate');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Genererer...';
+
+    try {
+      var res = await fetch("https://api.x.ai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + apiKey
+        },
+        body: JSON.stringify({
+          model: "grok-3-mini",
+          messages: [
+            {
+              role: "system",
+              content: "You are an expert AI image prompt engineer. Your only job is to take a rough description and turn it into a perfect, detailed image generation prompt. Output ONLY the final prompt — no explanation, no preamble, no quotes."
+            },
+            {
+              role: "user",
+              content: "Transform this into a perfect Grok Imagine prompt. Be specific about lighting, composition, camera settings, and atmosphere. Use technical photography terms. 2–4 sentences max. Focus on realism and cinematic quality. Write in English only.\n\nRough input: \"" + base + "\""
+            }
+          ],
+          temperature: 0.7
+        })
+      });
+
+      var data = await res.json();
+      if (data.error) {
+        showResult("⚠️ API-feil: " + (data.error.message || JSON.stringify(data.error)));
+      } else {
+        showResult((data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || "Noe gikk galt. Prøv igjen.");
+      }
+    } catch (err) {
+      showResult("Tilkoblingsfeil: " + err.message);
+    }
+
+    btn.disabled = false;
+    btn.innerHTML = '✦ Lag perfekt prompt';
+  }
+
+  function showResult(text) {
+    var box = document.getElementById('result-box');
+    document.getElementById('result-text').textContent = text;
+    var copyBtn = document.getElementById('btn-copy');
+    copyBtn.textContent = 'Kopier prompt';
+    copyBtn.classList.remove('copied');
+    box.classList.add('visible');
+    box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  /* Safari-safe clipboard copy */
+  function safeCopy(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text);
+    }
+    // Fallback for Safari / ikke-HTTPS
+    return new Promise(function(resolve, reject) {
+      var helper = document.getElementById('clipboard-helper');
+      helper.value = text;
+      helper.removeAttribute('readonly');
+      helper.select();
+      helper.setSelectionRange(0, text.length); // iOS Safari
+      var ok = document.execCommand('copy');
+      helper.setAttribute('readonly', '');
+      helper.blur();
+      ok ? resolve() : reject(new Error('execCommand failed'));
+    });
+  }
+
+  function copyPrompt() {
+    var text = document.getElementById('result-text').textContent;
+    safeCopy(text).then(function() {
+      var btn = document.getElementById('btn-copy');
+      btn.textContent = '✓ Kopiert!';
+      btn.classList.add('copied');
+      showToast();
+    }).catch(function() {
+      showToast('Kopier teksten manuelt');
+    });
+  }
+
+  function copyExample(el, idx) {
+    safeCopy(EXAMPLES[idx]).then(function() {
+      var label = el.querySelector('.example-card-label');
+      var orig = label.textContent;
+      label.textContent = '✓ Kopiert!';
+      showToast();
+      setTimeout(function() { label.textContent = orig; }, 2000);
+    });
+  }
+
+  function showToast(msg) {
+    var t = document.getElementById('toast');
+    t.textContent = msg || '✓ Kopiert!';
+    t.classList.add('show');
+    setTimeout(function() { t.classList.remove('show'); }, 2000);
+  }
+</script>
+
+</body>
+</html>
