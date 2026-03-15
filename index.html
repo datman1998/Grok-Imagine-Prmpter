@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+
+<html lang="no">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Grok Imagine">
+  <title>Grok Imagine Studio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --gold: #d4a853;
+      --gold-light: #f0d68a;
+      --gold-dim: #a07e2e;
+      --accent: #e8c56d;
+      --bg: #08080a;
+      --surface: #0f0f12;
+      --surface-2: #141418;
+      --border: #1a1a20;
+      --border-2: #25252e;
+      --text: #eaeaea;
+      --muted: #4a4a55;
+      --sub: #7a7a88;
+      --danger: #e85454;
+      --success: #5ec66e;
+    }
+
+```
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding-bottom: env(safe-area-inset-bottom);
+  overflow-x: hidden;
+}
+
+/* === HEADER === */
+.header {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(8,8,10,0.92);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 20px;
+  padding-top: calc(14px + env(safe-area-inset-top));
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+.logo { display: flex; align-items: center; gap: 11px; }
+.logo-icon {
+  width: 34px; height: 34px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+  border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px; flex-shrink: 0;
+  box-shadow: 0 2px 12px rgba(212,168,83,0.2);
+}
+.logo-text {
+  font-family: 'Instrument Serif', serif;
+  font-size: 19px; font-weight: 400; letter-spacing: -0.01em;
+}
+.logo-sub { font-size: 10px; color: var(--muted); margin-top: 1px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; }
+
+.tabs { display: flex; gap: 3px; background: var(--surface); border-radius: 10px; padding: 3px; }
+.tab {
+  padding: 7px 14px; border-radius: 8px; border: none;
+  background: transparent; color: var(--muted); cursor: pointer;
+  font-size: 12px; font-weight: 600; font-family: inherit;
+  transition: all 0.2s; letter-spacing: 0.02em;
+}
+.tab.active { background: var(--border-2); color: var(--gold); }
+
+/* === CONTENT === */
+.content { max-width: 620px; margin: 0 auto; padding: 24px 20px 50px; }
+
+/* === API KEY === */
+.apikey-box {
+  background: var(--surface);
+  border: 1px solid var(--border-2);
+  border-radius: 14px;
+  padding: 13px 16px;
+  margin-bottom: 28px;
+  display: flex; align-items: center; gap: 11px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.apikey-box.valid {
+  border-color: rgba(212,168,83,0.3);
+  box-shadow: 0 0 20px rgba(212,168,83,0.06);
+}
+.apikey-icon { font-size: 16px; flex-shrink: 0; opacity: 0.7; }
+.apikey-input {
+  flex: 1; background: transparent; border: none;
+  color: var(--text); font-size: 13px;
+  font-family: 'Outfit', monospace; outline: none; min-width: 0;
+  font-weight: 400;
+}
+.apikey-input::placeholder { color: var(--muted); }
+.apikey-status {
+  font-size: 10px; font-weight: 700; flex-shrink: 0;
+  padding: 4px 10px; border-radius: 999px; letter-spacing: 0.03em;
+}
+.apikey-status.ok { background: rgba(94,198,110,0.1); color: var(--success); }
+.apikey-status.empty { background: rgba(255,255,255,0.04); color: var(--muted); }
+
+/* === MODE TOGGLE === */
+.mode-toggle {
+  display: flex; gap: 0; margin-bottom: 26px;
+  background: var(--surface); border-radius: 12px;
+  padding: 4px; border: 1px solid var(--border);
+}
+.mode-btn {
+  flex: 1; padding: 11px 16px; border: none; border-radius: 9px;
+  background: transparent; color: var(--sub); cursor: pointer;
+  font-size: 13px; font-weight: 600; font-family: inherit;
+  transition: all 0.2s; text-align: center;
+}
+.mode-btn.active {
+  background: linear-gradient(135deg, rgba(212,168,83,0.15), rgba(212,168,83,0.08));
+  color: var(--gold);
+  box-shadow: 0 1px 8px rgba(212,168,83,0.1);
+}
+.mode-btn span { font-size: 15px; margin-right: 6px; vertical-align: middle; }
+
+/* === SECTIONS === */
+.section { margin-bottom: 24px; }
+.section-label {
+  font-size: 10px; font-weight: 700; color: var(--muted);
+  letter-spacing: 0.12em; text-transform: uppercase;
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 11px;
+}
+.section-label .num {
+  background: var(--border-2); color: var(--sub);
+  width: 20px; height: 20px; border-radius: 5px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700;
+}
+
+/* === CHIPS === */
+.chips { display: flex; flex-wrap: wrap; gap: 7px; }
+.chip {
+  padding: 7px 14px; border-radius: 999px;
+  border: 1.5px solid var(--border-2);
+  background: rgba(255,255,255,0.015);
+  color: var(--sub); cursor: pointer;
+  font-size: 12.5px; font-family: inherit; font-weight: 500;
+  transition: all 0.2s; -webkit-appearance: none;
+  letter-spacing: 0.01em;
+}
+.chip:active { transform: scale(0.96); }
+.chip.selected {
+  border-color: var(--gold);
+  background: rgba(212,168,83,0.10);
+  color: var(--accent); font-weight: 600;
+}
+
+/* === INPUTS === */
+.text-input {
+  width: 100%; background: var(--surface);
+  border: 1px solid var(--border-2); border-radius: 12px;
+  padding: 13px 16px; color: var(--text);
+  font-size: 14px; font-family: inherit; outline: none;
+  resize: none; -webkit-appearance: none;
+  font-weight: 400; line-height: 1.5;
+  transition: border-color 0.2s;
+}
+.text-input::placeholder { color: var(--muted); }
+.text-input:focus { border-color: rgba(212,168,83,0.3); }
+
+/* === IMAGE UPLOAD === */
+.upload-area {
+  border: 2px dashed var(--border-2);
+  border-radius: 14px;
+  padding: 28px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--surface);
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+}
+.upload-area:hover, .upload-area.dragover {
+  border-color: rgba(212,168,83,0.4);
+  background: rgba(212,168,83,0.03);
+}
+.upload-area.has-image { padding: 0; border-style: solid; border-color: var(--border-2); }
+.upload-area.has-image img {
+  width: 100%; max-height: 300px; object-fit: contain;
+  display: block; border-radius: 12px;
+}
+.upload-icon { font-size: 28px; margin-bottom: 8px; opacity: 0.5; }
+.upload-text { font-size: 13px; color: var(--muted); font-weight: 500; }
+.upload-hint { font-size: 11px; color: var(--muted); margin-top: 4px; opacity: 0.6; }
+.upload-clear {
+  position: absolute; top: 10px; right: 10px;
+  background: rgba(0,0,0,0.7); border: none; color: #fff;
+  width: 28px; height: 28px; border-radius: 999px;
+  cursor: pointer; font-size: 14px; display: flex;
+  align-items: center; justify-content: center;
+  backdrop-filter: blur(8px);
+}
+#file-input { display: none; }
+
+/* === GENERATE BUTTON === */
+.btn-generate {
+  width: 100%; padding: 16px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+  color: #0a0a0a; border: none; border-radius: 14px;
+  font-size: 15px; font-weight: 700; cursor: pointer;
+  font-family: inherit; letter-spacing: -0.01em;
+  transition: opacity 0.2s, transform 0.1s;
+  margin-bottom: 10px; -webkit-appearance: none;
+  box-shadow: 0 4px 20px rgba(212,168,83,0.2);
+  position: relative; overflow: hidden;
+}
+.btn-generate::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.5s;
+}
+.btn-generate:hover::after { transform: translateX(100%); }
+.btn-generate:active { transform: scale(0.985); opacity: 0.9; }
+.btn-generate:disabled {
+  background: var(--surface-2); color: var(--muted);
+  cursor: not-allowed; transform: none; box-shadow: none;
+}
+.btn-generate:disabled::after { display: none; }
+
+.btn-secondary {
+  width: 100%; padding: 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-2);
+  color: var(--sub); border-radius: 12px;
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  font-family: inherit; transition: all 0.15s;
+  -webkit-appearance: none; margin-bottom: 20px;
+}
+.btn-secondary:active { transform: scale(0.985); }
+
+/* === RESULT === */
+.result-box {
+  background: var(--surface); border: 1px solid var(--border-2);
+  border-radius: 16px; padding: 0; display: none; overflow: hidden;
+  margin-top: 10px;
+}
+.result-box.visible { display: block; animation: fadeUp 0.4s ease; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.result-image-wrap {
+  position: relative; background: #000;
+  display: flex; align-items: center; justify-content: center;
+  min-height: 200px;
+}
+.result-image-wrap img {
+  width: 100%; display: block;
+}
+.result-image-wrap .loading-overlay {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  background: var(--surface);
+  gap: 14px;
+}
+
+.result-footer {
+  padding: 16px 18px;
+  display: flex; gap: 8px; flex-wrap: wrap;
+}
+.result-btn {
+  flex: 1; min-width: 100px; padding: 10px 16px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border-2); border-radius: 9px;
+  color: var(--sub); cursor: pointer; font-size: 12px;
+  font-family: inherit; font-weight: 600;
+  transition: all 0.15s; -webkit-appearance: none;
+  text-align: center;
+}
+.result-btn:active { transform: scale(0.97); }
+.result-btn.gold { border-color: rgba(212,168,83,0.3); color: var(--gold); }
+
+/* === PROMPT RESULT (text mode) === */
+.prompt-result {
+  padding: 20px;
+}
+.prompt-result-label {
+  font-size: 10px; font-weight: 700; color: var(--muted);
+  letter-spacing: 0.1em; text-transform: uppercase;
+  margin-bottom: 10px; display: block;
+}
+.prompt-result-text {
+  font-size: 15px; line-height: 1.75; color: #c8c8c8;
+  font-family: 'Instrument Serif', serif;
+  font-style: italic;
+}
+
+/* === SPINNER === */
+.spinner-ring {
+  width: 36px; height: 36px;
+  border: 3px solid var(--border-2);
+  border-top-color: var(--gold);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.loading-text {
+  font-size: 13px; color: var(--sub); font-weight: 500;
+}
+
+/* === EXAMPLES TAB === */
+.example-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 14px; padding: 16px 18px; margin-bottom: 12px;
+  cursor: pointer; transition: all 0.15s;
+  -webkit-appearance: none; text-align: left;
+  width: 100%; font-family: inherit; display: block;
+}
+.example-card:active { border-color: var(--border-2); transform: scale(0.99); }
+.example-card-label {
+  font-size: 10px; color: var(--gold); font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  margin-bottom: 7px; display: block;
+}
+.example-card-text {
+  font-size: 13px; color: #aaa; line-height: 1.7;
+  font-family: 'Instrument Serif', serif;
+  font-style: italic;
+}
+
+.tips-box {
+  background: rgba(212,168,83,0.03);
+  border: 1px solid rgba(212,168,83,0.12);
+  border-radius: 14px; padding: 18px 20px; margin-top: 12px;
+}
+.tips-title { font-size: 13px; font-weight: 700; color: var(--gold); margin-bottom: 10px; }
+.tips-list { list-style: none; padding: 0; }
+.tips-list li {
+  font-size: 13px; color: var(--sub); line-height: 1.9;
+  padding-left: 18px; position: relative;
+}
+.tips-list li::before {
+  content: "→"; position: absolute; left: 0;
+  color: var(--gold-dim); font-size: 11px;
+}
+.tips-list li strong { color: #bbb; font-weight: 600; }
+
+/* === TOAST === */
+.toast {
+  position: fixed;
+  bottom: calc(30px + env(safe-area-inset-bottom));
+  left: 50%; transform: translateX(-50%) translateY(80px);
+  background: var(--surface-2); border: 1px solid var(--gold);
+  color: var(--gold); padding: 10px 24px;
+  border-radius: 999px; font-size: 13px; font-weight: 600;
+  transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  z-index: 999; pointer-events: none;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* === ERROR === */
+.error-msg {
+  background: rgba(232,84,84,0.08);
+  border: 1px solid rgba(232,84,84,0.2);
+  border-radius: 12px; padding: 14px 16px;
+  font-size: 13px; color: #e87777;
+  margin-bottom: 16px; display: none;
+  line-height: 1.5;
+}
+.error-msg.visible { display: block; animation: fadeUp 0.3s ease; }
+
+/* === HIDE/SHOW === */
+.hidden { display: none !important; }
+```
+
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">
+    <div class="logo-icon">✦</div>
+    <div>
+      <div class="logo-text">Grok Imagine Studio</div>
+      <div class="logo-sub">Powered by xAI</div>
+    </div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('builder')">Studio</button>
+    <button class="tab" onclick="showTab('examples')">Tips</button>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- ===== BUILDER TAB ===== -->
+
+  <div id="tab-builder">
+
+```
+<!-- API Key -->
+<div class="apikey-box" id="apikey-box">
+  <span class="apikey-icon">🔑</span>
+  <input class="apikey-input" id="apikey-input" type="password"
+    placeholder="xAI API-nøkkel (xai-...)"
+    oninput="updateKeyStatus()"
+    autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="apikey-status empty" id="apikey-status">Mangler</span>
+</div>
+
+<!-- Mode Toggle -->
+<div class="mode-toggle">
+  <button class="mode-btn active" onclick="setMode('generate')" id="mode-generate">
+    <span>🎨</span>Generer bilde
+  </button>
+  <button class="mode-btn" onclick="setMode('edit')" id="mode-edit">
+    <span>✏️</span>Rediger bilde
+  </button>
+  <button class="mode-btn" onclick="setMode('prompt')" id="mode-prompt">
+    <span>✍️</span>Lag prompt
+  </button>
+</div>
+
+<!-- Upload area (edit mode) -->
+<div class="section hidden" id="section-upload">
+  <span class="section-label"><span class="num">↑</span> Last opp bilde</span>
+  <div class="upload-area" id="upload-area" onclick="document.getElementById('file-input').click()">
+    <div id="upload-placeholder">
+      <div class="upload-icon">📷</div>
+      <div class="upload-text">Trykk eller dra bilde hit</div>
+      <div class="upload-hint">JPG eller PNG</div>
+    </div>
+    <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp" onchange="handleFileSelect(event)">
+  </div>
+</div>
+
+<!-- Subject -->
+<div class="section">
+  <span class="section-label"><span class="num">1</span> Emne / Motiv</span>
+  <div class="chips" id="chips-subject"></div>
+  <textarea class="text-input" id="details" rows="2"
+    placeholder="Beskriv motivet... f.eks. 'a Norwegian fisherman in his 60s mending nets'"></textarea>
+</div>
+
+<!-- Style -->
+<div class="section" id="section-style">
+  <span class="section-label"><span class="num">2</span> Stil</span>
+  <div class="chips" id="chips-style"></div>
+</div>
+
+<!-- Lighting -->
+<div class="section" id="section-lighting">
+  <span class="section-label"><span class="num">3</span> Lys</span>
+  <div class="chips" id="chips-lighting"></div>
+</div>
+
+<!-- Mood -->
+<div class="section" id="section-mood">
+  <span class="section-label"><span class="num">4</span> Stemning</span>
+  <div class="chips" id="chips-mood"></div>
+</div>
+
+<!-- Camera -->
+<div class="section" id="section-camera">
+  <span class="section-label"><span class="num">5</span> Kamera</span>
+  <div class="chips" id="chips-camera"></div>
+</div>
+
+<!-- Aspect Ratio (generate/edit mode) -->
+<div class="section" id="section-ratio">
+  <span class="section-label"><span class="num">⬡</span> Format</span>
+  <div class="chips" id="chips-ratio"></div>
+</div>
+
+<!-- Error -->
+<div class="error-msg" id="error-msg"></div>
+
+<!-- Generate / Prompt button -->
+<button class="btn-generate" id="btn-generate" onclick="handleGenerate()">
+  ✦ Generer bilde
+</button>
+
+<!-- Also generate prompt (in generate mode) -->
+<button class="btn-secondary hidden" id="btn-prompt-only" onclick="handlePromptOnly()">
+  ✍️ Bare lag prompt (uten bilde)
+</button>
+
+<!-- RESULT: Image -->
+<div class="result-box" id="result-image-box">
+  <div class="result-image-wrap" id="result-image-wrap">
+    <div class="loading-overlay hidden" id="loading-overlay">
+      <div class="spinner-ring"></div>
+      <div class="loading-text" id="loading-text">Genererer bilde...</div>
+    </div>
+    <img id="result-image" src="" alt="Generated image" style="display:none">
+  </div>
+  <div class="result-footer">
+    <button class="result-btn gold" onclick="downloadImage()">⬇ Last ned</button>
+    <button class="result-btn" onclick="copyImageUrl()">🔗 Kopier URL</button>
+    <button class="result-btn" onclick="editGenerated()">✏️ Rediger dette</button>
+  </div>
+</div>
+
+<!-- RESULT: Prompt text -->
+<div class="result-box" id="result-prompt-box">
+  <div class="prompt-result">
+    <span class="prompt-result-label">Din Grok Imagine Prompt</span>
+    <p class="prompt-result-text" id="result-prompt-text"></p>
+  </div>
+  <div class="result-footer">
+    <button class="result-btn gold" onclick="copyPromptText()">📋 Kopier prompt</button>
+    <button class="result-btn" onclick="generateFromPrompt()">🎨 Generer bilde fra denne</button>
+  </div>
+</div>
+```
+
+  </div>
+
+  <!-- ===== TIPS TAB ===== -->
+
+  <div id="tab-examples" style="display:none">
+    <p style="color: var(--muted); font-size: 13px; margin-bottom: 22px; font-weight: 400;">
+      Trykk for å kopiere – lim rett inn i Grok Imagine.
+    </p>
+
+```
+<button class="example-card" onclick="copyExample(this, 0)">
+  <span class="example-card-label">Natur</span>
+  <span class="example-card-text">A lone lighthouse on a rocky Norwegian coast at blue hour, mist rolling in from the sea, cinematic 4K photography, Canon EOS R5, dramatic clouds, photorealistic</span>
+</button>
+<button class="example-card" onclick="copyExample(this, 1)">
+  <span class="example-card-label">Portrett</span>
+  <span class="example-card-text">Portrait of an elderly craftsman in his workshop, golden hour light through dusty windows, shallow depth of field, authentic documentary style, Leica M11, highly detailed, 8K</span>
+</button>
+<button class="example-card" onclick="copyExample(this, 2)">
+  <span class="example-card-label">By</span>
+  <span class="example-card-text">Modern Oslo city street at night, reflections on wet cobblestones, neon signs, long exposure photography, cinematic atmosphere, Sony A7R IV, ultra realistic, 8K resolution</span>
+</button>
+<button class="example-card" onclick="copyExample(this, 3)">
+  <span class="example-card-label">Arkitektur</span>
+  <span class="example-card-text">Scandinavian cabin surrounded by snow-covered pine trees at dawn, warm amber light glowing from windows, aerial drone shot, overcast sky, cinematic, Hasselblad, photorealistic</span>
+</button>
+
+<div class="tips-box">
+  <div class="tips-title">Tips for beste resultat</div>
+  <ul class="tips-list">
+    <li>Skriv alltid prompten på <strong>engelsk</strong></li>
+    <li>Spesifiser kameramodell og linse</li>
+    <li>Beskriv lyset så nøyaktig som mulig</li>
+    <li>Legg til <strong>"photorealistic, 8K"</strong> på slutten</li>
+    <li>Bruk filmreferanser: <strong>"shot like a Nolan film"</strong></li>
+    <li>Gi referanse til årstid, vær og tidspunkt</li>
+    <li><strong>Aspect ratio</strong> — bruk 16:9 for landskap, 9:16 for stories</li>
+    <li><strong>Image edit</strong> — last opp et bilde og beskriv endringer</li>
+  </ul>
+</div>
+```
+
+  </div>
+</div>
+
+<div class="toast" id="toast">✓ Kopiert!</div>
+
+<script>
+// ===== PROXY CONFIG =====
+// Replace with your Cloudflare Worker URL, e.g. "https://grok-proxy.datman1998.workers.dev"
+const PROXY_URL = "https://grok-proxy.datman1998.workers.dev";
+
+// ===== CONFIG =====
+const CHIPS = {
+  subject:  ["Person","Landskap","Arkitektur","Dyr","Abstrakt","Produkt","Mat","By/Gate"],
+  style:    ["Fotorealistisk","Kinematisk","Studio-foto","Dokumentar","Oljemaling","High-fashion","Editorial","Anime"],
+  lighting: ["Naturlig dagslys","Gyllen time","Blå time","Studio-lys","Neonlys","Stearinlys","Overskyet","Dramatisk skygge"],
+  mood:     ["Dramatisk","Rolig","Mystisk","Energisk","Melankolsk","Episk","Intim","Futuristisk"],
+  camera:   ["Canon EOS R5","Sony A7R IV","Nikon Z9","Hasselblad","Leica M11","Drone","Vidvinkel","85mm portrett"],
+  ratio:    ["1:1","16:9","9:16","4:3","3:4","3:2","2:1","auto"],
+};
+
+const STYLE_MAP = {
+  "Fotorealistisk": "photorealistic",
+  "Kinematisk": "cinematic",
+  "Studio-foto": "studio photography",
+  "Dokumentar": "documentary",
+  "Oljemaling": "oil painting",
+  "High-fashion": "high-fashion editorial",
+  "Editorial": "editorial photography",
+  "Anime": "anime style",
+};
+const LIGHT_MAP = {
+  "Naturlig dagslys": "natural daylight",
+  "Gyllen time": "golden hour",
+  "Blå time": "blue hour",
+  "Studio-lys": "studio lighting",
+  "Neonlys": "neon lighting",
+  "Stearinlys": "candlelight",
+  "Overskyet": "overcast soft light",
+  "Dramatisk skygge": "dramatic shadows",
+};
+const MOOD_MAP = {
+  "Dramatisk": "dramatic",
+  "Rolig": "calm, serene",
+  "Mystisk": "mysterious",
+  "Energisk": "energetic, vibrant",
+  "Melankolsk": "melancholic",
+  "Episk": "epic, grand",
+  "Intim": "intimate",
+  "Futuristisk": "futuristic",
+};
+
+const selected = { subject:"", style:"", lighting:"", mood:"", camera:"", ratio:"1:1" };
+let currentMode = "generate"; // generate | edit | prompt
+let uploadedImageBase64 = null;
+let lastGeneratedUrl = null;
+let lastGeneratedPrompt = null;
+
+const EXAMPLES = [
+  "A lone lighthouse on a rocky Norwegian coast at blue hour, mist rolling in from the sea, cinematic 4K photography, Canon EOS R5, dramatic clouds, photorealistic",
+  "Portrait of an elderly craftsman in his workshop, golden hour light through dusty windows, shallow depth of field, authentic documentary style, Leica M11, highly detailed, 8K",
+  "Modern Oslo city street at night, reflections on wet cobblestones, neon signs, long exposure photography, cinematic atmosphere, Sony A7R IV, ultra realistic, 8K resolution",
+  "Scandinavian cabin surrounded by snow-covered pine trees at dawn, warm amber light glowing from windows, aerial drone shot, overcast sky, cinematic, Hasselblad, photorealistic",
+];
+
+// ===== INIT CHIPS =====
+Object.keys(CHIPS).forEach(group => {
+  const container = document.getElementById('chips-' + group);
+  if (!container) return;
+  CHIPS[group].forEach(label => {
+    const btn = document.createElement('button');
+    btn.className = 'chip';
+    if (group === 'ratio' && label === '1:1') btn.classList.add('selected');
+    btn.textContent = label;
+    btn.onclick = () => {
+      if (group === 'ratio') {
+        // ratio is always-select (one must be active)
+        selected[group] = label;
+        container.querySelectorAll('.chip').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+      } else {
+        selected[group] = selected[group] === label ? "" : label;
+        container.querySelectorAll('.chip').forEach(b => b.classList.remove('selected'));
+        if (selected[group]) btn.classList.add('selected');
+      }
+    };
+    container.appendChild(btn);
+  });
+});
+
+// ===== API KEY =====
+function updateKeyStatus() {
+  const val = document.getElementById('apikey-input').value.trim();
+  const status = document.getElementById('apikey-status');
+  const box = document.getElementById('apikey-box');
+  if (val.startsWith('xai-') && val.length > 20) {
+    status.textContent = '✓ Klar';
+    status.className = 'apikey-status ok';
+    box.classList.add('valid');
+  } else {
+    status.textContent = 'Mangler';
+    status.className = 'apikey-status empty';
+    box.classList.remove('valid');
+  }
+}
+
+// ===== TABS =====
+function showTab(tab) {
+  document.getElementById('tab-builder').style.display = tab === 'builder' ? 'block' : 'none';
+  document.getElementById('tab-examples').style.display = tab === 'examples' ? 'block' : 'none';
+  document.querySelectorAll('.tab').forEach((t, i) => {
+    t.classList.toggle('active', (i === 0 && tab === 'builder') || (i === 1 && tab === 'examples'));
+  });
+}
+
+// ===== MODE =====
+function setMode(mode) {
+  currentMode = mode;
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('mode-' + mode).classList.add('active');
+
+  const btn = document.getElementById('btn-generate');
+  const btnPromptOnly = document.getElementById('btn-prompt-only');
+  const uploadSection = document.getElementById('section-upload');
+  const ratioSection = document.getElementById('section-ratio');
+
+  if (mode === 'generate') {
+    btn.textContent = '✦ Generer bilde';
+    btnPromptOnly.classList.remove('hidden');
+    uploadSection.classList.add('hidden');
+    ratioSection.classList.remove('hidden');
+  } else if (mode === 'edit') {
+    btn.textContent = '✦ Rediger bilde';
+    btnPromptOnly.classList.add('hidden');
+    uploadSection.classList.remove('hidden');
+    ratioSection.classList.add('hidden');
+  } else {
+    btn.textContent = '✍️ Lag perfekt prompt';
+    btnPromptOnly.classList.add('hidden');
+    uploadSection.classList.add('hidden');
+    ratioSection.classList.add('hidden');
+  }
+}
+
+// ===== FILE UPLOAD =====
+const uploadArea = document.getElementById('upload-area');
+uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.classList.add('dragover'); });
+uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
+uploadArea.addEventListener('drop', e => {
+  e.preventDefault();
+  uploadArea.classList.remove('dragover');
+  if (e.dataTransfer.files.length) processFile(e.dataTransfer.files[0]);
+});
+
+function handleFileSelect(e) {
+  if (e.target.files.length) processFile(e.target.files[0]);
+}
+
+function processFile(file) {
+  if (!file.type.startsWith('image/')) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    uploadedImageBase64 = ev.target.result; // data:image/...;base64,...
+    const area = document.getElementById('upload-area');
+    area.classList.add('has-image');
+    area.innerHTML = `
+      <img src="${uploadedImageBase64}" alt="Uploaded">
+      <button class="upload-clear" onclick="clearUpload(event)">✕</button>
+    `;
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearUpload(e) {
+  e.stopPropagation();
+  uploadedImageBase64 = null;
+  const area = document.getElementById('upload-area');
+  area.classList.remove('has-image');
+  area.innerHTML = `
+    <div id="upload-placeholder">
+      <div class="upload-icon">📷</div>
+      <div class="upload-text">Trykk eller dra bilde hit</div>
+      <div class="upload-hint">JPG eller PNG</div>
+    </div>
+    <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp" onchange="handleFileSelect(event)">
+  `;
+}
+
+// ===== BUILD PROMPT =====
+function buildPrompt() {
+  const details = document.getElementById('details').value.trim();
+  const parts = [];
+
+  if (selected.subject) parts.push(selected.subject);
+  if (details) parts.push(details);
+  if (selected.style) parts.push((STYLE_MAP[selected.style] || selected.style) + " style");
+  if (selected.lighting) parts.push((LIGHT_MAP[selected.lighting] || selected.lighting) + " lighting");
+  if (selected.mood) parts.push((MOOD_MAP[selected.mood] || selected.mood) + " mood");
+  if (selected.camera) parts.push("shot on " + selected.camera);
+  parts.push("highly detailed, photorealistic, 8K resolution");
+
+  return parts.join(", ");
+}
+
+function showError(msg) {
+  const el = document.getElementById('error-msg');
+  el.textContent = msg;
+  el.classList.add('visible');
+  setTimeout(() => el.classList.remove('visible'), 6000);
+}
+
+function hideError() {
+  document.getElementById('error-msg').classList.remove('visible');
+}
+
+function getApiKey() {
+  return document.getElementById('apikey-input').value.trim();
+}
+
+// ===== MAIN ACTIONS =====
+async function handleGenerate() {
+  hideError();
+  const apiKey = getApiKey();
+  if (!apiKey.startsWith('xai-')) {
+    showError("Lim inn xAI API-nøkkelen din øverst først.");
+    return;
+  }
+
+  if (!selected.subject && !document.getElementById('details').value.trim()) {
+    showError("Velg et emne eller skriv en beskrivelse først.");
+    return;
+  }
+
+  if (currentMode === 'prompt') {
+    await generatePromptText(apiKey);
+  } else if (currentMode === 'edit') {
+    if (!uploadedImageBase64) {
+      showError("Last opp et bilde først for å redigere.");
+      return;
+    }
+    await generateImage(apiKey, true);
+  } else {
+    await generateImage(apiKey, false);
+  }
+}
+
+async function handlePromptOnly() {
+  hideError();
+  const apiKey = getApiKey();
+  if (!apiKey.startsWith('xai-')) {
+    showError("Lim inn xAI API-nøkkelen din øverst først.");
+    return;
+  }
+  if (!selected.subject && !document.getElementById('details').value.trim()) {
+    showError("Velg et emne eller skriv en beskrivelse først.");
+    return;
+  }
+  await generatePromptText(apiKey);
+}
+
+// ===== IMAGE GENERATION =====
+async function generateImage(apiKey, isEdit) {
+  const prompt = buildPrompt();
+  const btn = document.getElementById('btn-generate');
+  const imageBox = document.getElementById('result-image-box');
+  const promptBox = document.getElementById('result-prompt-box');
+  const overlay = document.getElementById('loading-overlay');
+  const loadingText = document.getElementById('loading-text');
+  const resultImg = document.getElementById('result-image');
+
+  // UI: show loading
+  btn.disabled = true;
+  btn.textContent = isEdit ? '⏳ Redigerer...' : '⏳ Genererer...';
+  promptBox.classList.remove('visible');
+  imageBox.classList.add('visible');
+  resultImg.style.display = 'none';
+  overlay.classList.remove('hidden');
+  loadingText.textContent = isEdit ? 'Redigerer bilde...' : 'Genererer bilde...';
+  imageBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+  try {
+    let body;
+    let endpoint;
+
+    if (isEdit) {
+      endpoint = "images-edit";
+      body = {
+        model: "grok-imagine-image",
+        prompt: prompt,
+        image: {
+          url: uploadedImageBase64,
+          type: "image_url"
+        }
+      };
+    } else {
+      endpoint = "images";
+      body = {
+        model: "grok-imagine-image",
+        prompt: prompt,
+        n: 1,
+        response_format: "url",
+      };
+      if (selected.ratio && selected.ratio !== "1:1") {
+        body.aspect_ratio = selected.ratio;
+      }
+    }
+
+    const res = await fetch(PROXY_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${apiKey}`,
+        "X-Target-Endpoint": endpoint
+      },
+      body: JSON.stringify(body)
+    });
+
+    const data = await res.json();
+
+    if (data.error) {
+      throw new Error(data.error.message || JSON.stringify(data.error));
+    }
+
+    // Extract image URL
+    let imageUrl = null;
+    if (data.data && data.data[0]) {
+      imageUrl = data.data[0].url || null;
+    }
+
+    if (!imageUrl) {
+      throw new Error("Ingen bilde-URL i responsen. Sjekk API-nøkkelen og modellen.");
+    }
+
+    lastGeneratedUrl = imageUrl;
+    lastGeneratedPrompt = prompt;
+    resultImg.src = imageUrl;
+    resultImg.style.display = 'block';
+    overlay.classList.add('hidden');
+
+  } catch (err) {
+    overlay.classList.add('hidden');
+    imageBox.classList.remove('visible');
+    showError("API-feil: " + err.message);
+  }
+
+  btn.disabled = false;
+  btn.textContent = isEdit ? '✦ Rediger bilde' : '✦ Generer bilde';
+}
+
+// ===== PROMPT GENERATION (via chat completions) =====
+async function generatePromptText(apiKey) {
+  const base = buildPrompt();
+  const btn = document.getElementById('btn-generate');
+  const promptBox = document.getElementById('result-prompt-box');
+  const imageBox = document.getElementById('result-image-box');
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner-ring" style="width:14px;height:14px;border-width:2px;display:inline-block;vertical-align:middle;margin-right:6px"></span> Skriver...';
+  imageBox.classList.remove('visible');
+
+  try {
+    const res = await fetch(PROXY_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${apiKey}`,
+        "X-Target-Endpoint": "chat"
+      },
+      body: JSON.stringify({
+        model: "grok-3-mini",
+        messages: [
+          {
+            role: "system",
+            content: "You are an expert AI image prompt engineer. Your only job is to take a rough description and turn it into a perfect, detailed image generation prompt for Grok Imagine. Output ONLY the final prompt — no explanation, no preamble, no quotes."
+          },
+          {
+            role: "user",
+            content: `Transform this into a perfect Grok Imagine prompt. Be specific about lighting, composition, camera settings, and atmosphere. Use technical photography terms. 2-4 sentences max. Focus on realism and cinematic quality. Write in English only.\n\nRough input: "${base}"`
+          }
+        ],
+        temperature: 0.7
+      })
+    });
+
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+
+    const text = data.choices?.[0]?.message?.content || "Noe gikk galt. Prøv igjen.";
+    lastGeneratedPrompt = text;
+    document.getElementById('result-prompt-text').textContent = text;
+    promptBox.classList.add('visible');
+    promptBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+  } catch (err) {
+    showError("Feil: " + err.message);
+  }
+
+  btn.disabled = false;
+  if (currentMode === 'prompt') {
+    btn.textContent = '✍️ Lag perfekt prompt';
+  } else {
+    btn.textContent = '✦ Generer bilde';
+  }
+}
+
+// ===== RESULT ACTIONS =====
+function copyPromptText() {
+  const text = document.getElementById('result-prompt-text').textContent;
+  navigator.clipboard.writeText(text).then(() => showToast('✓ Prompt kopiert!'));
+}
+
+async function generateFromPrompt() {
+  if (!lastGeneratedPrompt) return;
+  const apiKey = getApiKey();
+  if (!apiKey.startsWith('xai-')) { showError("API-nøkkel mangler."); return; }
+
+  // Override mode temporarily
+  const prevMode = currentMode;
+  currentMode = 'generate';
+  // Put the generated prompt in details
+  document.getElementById('details').value = lastGeneratedPrompt;
+  // Clear chip selections to avoid doubling
+  ['subject','style','lighting','mood','camera'].forEach(g => {
+    selected[g] = '';
+    document.getElementById('chips-' + g)?.querySelectorAll('.chip').forEach(b => b.classList.remove('selected'));
+  });
+
+  await generateImage(apiKey, false);
+  currentMode = prevMode;
+}
+
+function downloadImage() {
+  if (!lastGeneratedUrl) return;
+  const a = document.createElement('a');
+  a.href = lastGeneratedUrl;
+  a.download = 'grok-imagine-' + Date.now() + '.jpg';
+  a.target = '_blank';
+  a.rel = 'noopener';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+function copyImageUrl() {
+  if (!lastGeneratedUrl) return;
+  navigator.clipboard.writeText(lastGeneratedUrl).then(() => showToast('✓ URL kopiert!'));
+}
+
+function editGenerated() {
+  if (!lastGeneratedUrl) return;
+  // Switch to edit mode and use the generated image
+  setMode('edit');
+  uploadedImageBase64 = lastGeneratedUrl; // URL works too
+  const area = document.getElementById('upload-area');
+  area.classList.add('has-image');
+  area.innerHTML = `
+    <img src="${lastGeneratedUrl}" alt="Uploaded">
+    <button class="upload-clear" onclick="clearUpload(event)">✕</button>
+  `;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ===== EXAMPLES =====
+function copyExample(el, idx) {
+  navigator.clipboard.writeText(EXAMPLES[idx]).then(() => {
+    const orig = el.querySelector('.example-card-label').textContent;
+    el.querySelector('.example-card-label').textContent = '✓ Kopiert!';
+    showToast('✓ Kopiert!');
+    setTimeout(() => { el.querySelector('.example-card-label').textContent = orig; }, 2000);
+  });
+}
+
+// ===== TOAST =====
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg || '✓ Kopiert!';
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+</script>
+
+</body>
+</html>
